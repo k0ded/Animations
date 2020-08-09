@@ -22,8 +22,10 @@ Then you do this:
 played out and you type /animation setplaylocation <name>
 
 // Now to customize the animation. This part is pretty scuffed right now and I'll probably fix it later on.
+
 5. /animation edit <name>
 Proceed to click on the different triggers to get the prefered settings for the animation
 
-Now you have an animation set up so you can finally run it with
+// Now you have an animation set up so you can finally run it with
+
 6. /animation run <name>
