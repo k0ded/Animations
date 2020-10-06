@@ -79,7 +79,7 @@ public class Animation {
 			@Override
 			public void run() {
 				
-				if(i == 0) {
+				if(i <= 0) {
 					return;
 				}
 				pasteFramesBackwards(f, i - 1); 

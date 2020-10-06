@@ -24,9 +24,6 @@ public class AnimationCommand implements CommandExecutor {
 			return true;
 		}
 			
-		
-		
-		
 		if(!sender.hasPermission("pottercraft.builder")) {
 			sender.sendMessage("§cYou have insufficient permissions to perform this command");
 			return true;
@@ -160,10 +157,12 @@ public class AnimationCommand implements CommandExecutor {
 					animation.setSpeed(Integer.parseInt(args[3]));
 					Main.animationFile.save(animation);
 					pl.spigot().sendMessage(getEditMessage(args[1]));
+					break;
 				case "rwait":
 					animation.setReverseWait(Integer.parseInt(args[3]));
 					Main.animationFile.save(animation);
 					pl.spigot().sendMessage(getEditMessage(args[1]));
+					break;
 				case "setshowtrigger":
 					if(args[3].equalsIgnoreCase("true")) {
 						animation.setShowTrigger(true);
@@ -174,18 +173,20 @@ public class AnimationCommand implements CommandExecutor {
 						Main.animationFile.save(animation);
 						pl.spigot().sendMessage(getEditMessage(args[1]));
 					}
+					break;
 				case "setreverse":
 					if(args[3].equalsIgnoreCase("true")) {
-						animation.setReverse(!animation.isReverse());
+						animation.setReverse(true);
 						Main.animationFile.save(animation);
 						System.out.println("flipped setreverse");
 						pl.spigot().sendMessage(getEditMessage(args[1]));
 					}else {
-						animation.setReverse(!animation.isReverse());
+						animation.setReverse(false);
 						Main.animationFile.save(animation);
 						System.out.println("flipped setreverse");
 						pl.spigot().sendMessage(getEditMessage(args[1]));
 					}
+					break;
 				}
 				
 				
@@ -223,84 +224,75 @@ public class AnimationCommand implements CommandExecutor {
 			return component;
 		}
 		
-		TextComponent headfoot = new TextComponent("-===============-");
+		TextComponent headfoot = new TextComponent("");
+		TextComponent head = new TextComponent("-===============-");
+		headfoot.addExtra(head);
 		
-		//SPEED
-		TextComponent SPEEDMINUS = new TextComponent("«");
+		//SPEED-
+		TextComponent SPEEDMINUS = new TextComponent("\n«");
 		SPEEDMINUS.setColor(ChatColor.GREEN);
 		SPEEDMINUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " speed " + (animation.getSpeed() - 1)));
+		headfoot.addExtra(SPEEDMINUS);
+		
+		//SPEED
 		TextComponent SPEED = new TextComponent(" SPEED ");
 		SPEED.setColor(ChatColor.WHITE);
 		SPEED.setClickEvent(null);
-		SPEEDMINUS.addExtra(SPEED);
+		headfoot.addExtra(SPEED);
+		
+		//SPEED+
 		TextComponent SPEEDPLUS = new TextComponent("»");
 		SPEEDPLUS.setColor(ChatColor.GREEN);
 		SPEEDPLUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " speed " + (animation.getSpeed() + 1)));
-		SPEEDMINUS.addExtra(SPEEDPLUS);
+		headfoot.addExtra(SPEEDPLUS);
+		
+		//SPEEDSTAT
 		TextComponent SPEEDSTAT = new TextComponent(" (" + animation.getSpeed() + ")");
 		SPEEDSTAT.setColor(ChatColor.WHITE);
 		SPEEDSTAT.setClickEvent(null);
-		SPEEDMINUS.addExtra(SPEEDSTAT);
+		headfoot.addExtra(SPEEDSTAT);
 		
-		//RWAIT
-		TextComponent RWAITMINUS = new TextComponent("«");
+		//RWAIT-
+		TextComponent RWAITMINUS = new TextComponent("\n\n«");
 		RWAITMINUS.setColor(ChatColor.GREEN);
 		RWAITMINUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " rwait " + (animation.getReverseWait() - 1)));
+		headfoot.addExtra(RWAITMINUS);
+		
+		//RWAIT
 		TextComponent RWAIT = new TextComponent(" RWAIT ");
 		RWAIT.setColor(ChatColor.WHITE);
 		RWAIT.setClickEvent(null);
-		RWAITMINUS.addExtra(RWAIT);
+		headfoot.addExtra(RWAIT);
+		
+		//RWAIT+
 		TextComponent RWAITPLUS = new TextComponent("»");
 		RWAITPLUS.setColor(ChatColor.GREEN);
 		RWAITPLUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " rwait " + (animation.getReverseWait() + 1)));
-		RWAITMINUS.addExtra(RWAITPLUS);
+		headfoot.addExtra(RWAITPLUS);
+		
+		//RWAIT STAT
 		TextComponent RWAITSTAT = new TextComponent(" (" + animation.getReverseWait() + ")");
 		RWAITSTAT.setColor(ChatColor.WHITE);
-		RWAITSTAT.setClickEvent(null);
-		RWAITMINUS.addExtra(RWAITSTAT);
-		
-		TextComponent showt;
-		TextComponent rev;
+		RWAITSTAT.setClickEvent(null); 
+		headfoot.addExtra(RWAITSTAT);
 		
 		//SHOW TRIGGER
-		if(animation.isShowTrigger()) {
-			TextComponent showtrigger = new TextComponent("SHOW TRIGGER");
-			showtrigger.setColor(ChatColor.GREEN);
-			showtrigger.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setshowtrigger " + false));
-			showt = showtrigger;
-		}else {
-			TextComponent showtrigger = new TextComponent("SHOW TRIGGER");
-			showtrigger.setColor(ChatColor.RED);
-			showtrigger.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setshowtrigger " + true));
-			showt = showtrigger;
-		}
+		TextComponent showtrigger = new TextComponent("\n\nSHOW TRIGGER");
+		ChatColor color = animation.isShowTrigger() ? ChatColor.GREEN : ChatColor.RED;
+		showtrigger.setColor(color);
+		showtrigger.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setshowtrigger " + !animation.isShowTrigger()));
+		headfoot.addExtra(showtrigger);
 		
 		//Reverse
-		if(animation.isReverse()) {
-			TextComponent reverse = new TextComponent("REVERSE");
-			reverse.setColor(ChatColor.GREEN);
-			reverse.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setreverse " + false));
-			rev = reverse;
-		}else {
-			TextComponent reverse = new TextComponent("REVERSE");
-			reverse.setColor(ChatColor.RED);
-			reverse.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setreverse " + true));
-			rev = reverse;
-		}
+		TextComponent reverse = new TextComponent("\n\nREVERSE\n");
+		ChatColor rColor = animation.isReverse() ? ChatColor.GREEN : ChatColor.RED;
+		reverse.setColor(rColor);
+		reverse.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setreverse " + !animation.isReverse()));
+		headfoot.addExtra(reverse);
 		
-		TextComponent message = new TextComponent(headfoot);
-		message.addExtra("\n\n");
-		message.addExtra(SPEEDMINUS);
-		message.addExtra("\n\n");
-		message.addExtra(RWAITMINUS);
-		message.addExtra("\n\n");
-		message.addExtra(showt);
-		message.addExtra("\n\n");
-		message.addExtra(rev);
-		message.addExtra("\n\n");
-		message.addExtra(headfoot);
-				
-		return message;
+		headfoot.addExtra(head);
+
+		return headfoot;
 	}
 
 	public String getHelpMessage() {

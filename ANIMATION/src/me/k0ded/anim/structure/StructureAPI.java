@@ -7,8 +7,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.plugin.Plugin;
  
@@ -33,8 +33,7 @@ public class StructureAPI {
                     Location neww = l.clone();
                     neww.add(x, y, z);
                     Block b = neww.getBlock();
-                    Material mat = Material.getMaterial(schem.blocks[x][y][z]);
-                    b.setType(mat);
+                    b.setBlockData(Bukkit.createBlockData(schem.blocks[x][y][z]));
                     b.getState().update(true);
                 }
  
@@ -64,7 +63,6 @@ public class StructureAPI {
                fout = new FileOutputStream(f);
                oos = new ObjectOutputStream(fout);
                oos.writeObject(schem.blocks);
-               oos.writeObject(schem.data);
         } catch (Exception e) {
                e.printStackTrace();
         }finally {
@@ -98,14 +96,12 @@ public class StructureAPI {
         File f = new File(plugin.getDataFolder() + "/schematics/"+ name + ".schem");
  
         String[][][] loadedBlocks = new String[0][0][0];
-        byte[][][] loadedData = new byte[0][0][0];
  
         try {
             FileInputStream streamIn = new FileInputStream(f);
            ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
            
            loadedBlocks = (String[][][])objectinputstream.readObject();
-           loadedData = (byte[][][])objectinputstream.readObject();
  
            objectinputstream.close();
  
@@ -114,7 +110,7 @@ public class StructureAPI {
            e.printStackTrace();
     }
  
-        return new Schematic(loadedBlocks, loadedData);
+        return new Schematic(loadedBlocks);
     }
 
 }

@@ -5,18 +5,15 @@ import org.bukkit.block.Block;
 public class Schematic {
 	
 	String[][][] blocks;
-	byte[][][] data;
 	
 	public Schematic(Block block, Block block2) {
 		blocks = getStructure(block, block2);
 	}
 	
-	public Schematic(String[][][] blocks, byte[][][] data) {
+	public Schematic(String[][][] blocks) {
 		this.blocks = blocks;
-		this.data = data;
 	}
 	
-	@SuppressWarnings("deprecation")
 	public String[][][] getStructure(Block block, Block block2){
         int minX, minZ, minY;
         int maxX, maxZ, maxY;
@@ -32,7 +29,6 @@ public class Schematic {
         maxY = block.getY() > block2.getY() ? block.getY() : block2.getY();
  
         String[][][] blocks = new String[maxX-minX+1][maxY-minY+1][maxZ-minZ+1];
-        byte[][][] data = new byte[maxX-minX+1][maxY-minY+1][maxZ-minZ+1];
         
         for(int x = minX; x <= maxX; x++){
  
@@ -40,12 +36,10 @@ public class Schematic {
  
                 for(int z = minZ; z <= maxZ; z++){
                     Block b = block.getWorld().getBlockAt(x, y, z);
-                    data[x-minX][y-minY][z-minZ] = b.getData();
-                    blocks[x-minX][y-minY][z-minZ] = b.getType().name();
+                    blocks[x-minX][y-minY][z-minZ] = b.getBlockData().getAsString();
                 }
             }
         }
-        this.data = data;
         return blocks;
  
     }

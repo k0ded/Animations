@@ -41,6 +41,14 @@ public class Builder {
 	public void setSelection2(Block block) {
 		selection2 = block;
 	}
+	
+	public Block getSelection1() {
+		return selection1;	
+	}
+	
+	public Block getSelection2() {
+		return selection2;
+	}
 
 	public boolean isSettingTrigger() {
 		if(settingTrigger == null) {
