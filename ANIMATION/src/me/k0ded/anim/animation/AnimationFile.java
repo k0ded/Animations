@@ -21,7 +21,6 @@ public class AnimationFile extends AbstractFile {
 			config.set(anim.name + ".animlocy", anim.getAnimationLocation().getBlockY());
 			config.set(anim.name + ".animlocz", anim.getAnimationLocation().getBlockZ());
 			config.set(anim.name + ".animlocworld", anim.getAnimationLocation().getWorld().getName());
-			config.set(anim.name + ".showtrigger", anim.showTrigger);
 			config.set(anim.name + ".frames", anim.frames.size());
 			config.set(anim.name + ".triggerlocx", anim.getTrigger().getBlockX());
 			config.set(anim.name + ".triggerlocy", anim.getTrigger().getBlockY());
@@ -30,9 +29,7 @@ public class AnimationFile extends AbstractFile {
 			config.set(anim.name + ".speed", anim.getSpeed());
 			config.set(anim.name + ".reversewait", anim.getReverseWait());
 			config.set(anim.name + ".reverse", anim.isReverse());
-		} catch (NullPointerException e) {
-			
-		}
+		} catch (NullPointerException e) {}
 		save();
 	}
 	
@@ -72,8 +69,7 @@ public class AnimationFile extends AbstractFile {
 			
 			new Animation(
 					key, 
-					animationLocation, 
-					config.getBoolean(key + ".showtrigger"), 
+					animationLocation,  
 					frames, 
 					trigger, 
 					config.getInt(key + ".speed"), 

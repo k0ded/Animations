@@ -43,15 +43,21 @@ public class AnimationCommand implements CommandExecutor {
 				sender.sendMessage(getAnimationListMessage());
 				break;
 			}
-			
+			sender.sendMessage(getHelpMessage());
+			return true;
 		case 2:
 			Player p = (Player)sender;
 			if(args[0].equalsIgnoreCase("create")) {
 				
-				Animation anim = new Animation(args[1]);
-				Main.animationFile.save(anim);
-				p.sendMessage("§aYou have successfully created a magical animation!");
-				return true;
+				if(findAnimation(args[1]) == null) {
+					Animation anim = new Animation(args[1]);
+					Main.animationFile.save(anim);
+					p.sendMessage("§aYou have successfully created a magical animation!");
+					return true;
+				}else {
+					p.sendMessage("§cThat animation already exists!");
+					return true;
+				}
 			}
 			if(args[0].equalsIgnoreCase("edit")) {
 				
@@ -89,14 +95,10 @@ public class AnimationCommand implements CommandExecutor {
 				for(Animation anim : Main.animations) {
 					
 					if(anim.getName().contentEquals(args[1])) {
-						if(anim.run()) {
-							p.sendMessage("§aYour magical structure works as intended!");
-							return true;
-						}else {
+						if(!anim.run()) {
 							p.sendMessage("§cYour magical structure isnt tuned correctly!");
-							return true;
 						}
-						
+						return true;
 					}
 					
 				}
@@ -104,7 +106,7 @@ public class AnimationCommand implements CommandExecutor {
 				return true;
 			}
 			
-			if(args[0].equalsIgnoreCase("setplaylocation")) {
+			if(args[0].equalsIgnoreCase("setplayout")) {
 				
 				for(Animation anim : Main.animations) {
 					if(anim.getName().contentEquals(args[1])) {
@@ -132,7 +134,7 @@ public class AnimationCommand implements CommandExecutor {
 				}
 				
 				builder.settingTrigger(animation);
-				p.sendMessage("§aPerfect! Now use your golden wand to set the trigger!");				
+				p.sendMessage("§aPerfect! Now punch the block you want to be as trigger for the animation!");				
 				return true;
 			}
 			
@@ -150,11 +152,8 @@ public class AnimationCommand implements CommandExecutor {
 				switch(args[2]) {
 				
 				case "speed":
-					if(Integer.parseInt(args[3]) <= 1) {
-						animation.setSpeed(1);
-						return true;
-					}
-					animation.setSpeed(Integer.parseInt(args[3]));
+					int speed = Integer.parseInt(args[3]) <= 1 ? 1 : Integer.parseInt(args[3]);
+					animation.setSpeed(speed);  
 					Main.animationFile.save(animation);
 					pl.spigot().sendMessage(getEditMessage(args[1]));
 					break;
@@ -163,49 +162,45 @@ public class AnimationCommand implements CommandExecutor {
 					Main.animationFile.save(animation);
 					pl.spigot().sendMessage(getEditMessage(args[1]));
 					break;
-				case "setshowtrigger":
-					if(args[3].equalsIgnoreCase("true")) {
-						animation.setShowTrigger(true);
-						Main.animationFile.save(animation);
-						pl.spigot().sendMessage(getEditMessage(args[1]));
-					}else {
-						animation.setShowTrigger(false);
-						Main.animationFile.save(animation);
-						pl.spigot().sendMessage(getEditMessage(args[1]));
-					}
-					break;
 				case "setreverse":
-					if(args[3].equalsIgnoreCase("true")) {
-						animation.setReverse(true);
-						Main.animationFile.save(animation);
-						System.out.println("flipped setreverse");
-						pl.spigot().sendMessage(getEditMessage(args[1]));
-					}else {
-						animation.setReverse(false);
-						Main.animationFile.save(animation);
-						System.out.println("flipped setreverse");
-						pl.spigot().sendMessage(getEditMessage(args[1]));
-					}
+					boolean reverse = args[3].equalsIgnoreCase("true") ? true : false;
+					
+					animation.setReverse(reverse);
+					Main.animationFile.save(animation);
+					pl.spigot().sendMessage(getEditMessage(args[1]));
 					break;
+				
 				}
-				
-				
 			}
-			
+			break;
 		default:
 			sender.sendMessage(getHelpMessage());
+			break;
 		}
-		
-		
-		
-		
-		
 		return true;
+	}
+	
+	private String getHelpMessage() {
+		
+		String message = 
+				  "-=+=- &d&l&oPottercraft Animations&f -=+=-\n"
+				+ "&l&nCommands\n&f"
+				+ "&o/animation\n&f"
+				+ "      - &olist\n&f"
+				+ "      - &ocreate <animationName>\n&f"
+				+ "      - &oedit <animationName>\n&f"
+				+ "      - &orun <animationName>\n&f"
+				+ "      - &osetTrigger <animationName>\n&f"
+				+ "      - &osetPlayout\n&f"
+				+ "-=+=-                                    -=+=-";
+				
+		String colorMessage = org.bukkit.ChatColor.translateAlternateColorCodes('&', message);
+		
+		return colorMessage;
 	}
 	
 	private Animation findAnimation(String string) {
 		for(Animation anim : Main.animations) {
-			
 			if(anim.getName().contentEquals(string)) {
 				return anim;
 			}
@@ -224,12 +219,18 @@ public class AnimationCommand implements CommandExecutor {
 			return component;
 		}
 		
-		TextComponent headfoot = new TextComponent("");
-		TextComponent head = new TextComponent("-===============-");
+		TextComponent headfoot = new TextComponent("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
+		TextComponent head = new TextComponent("-=+=- §d§l§oPottercraft Animations§f -=+=-\n");
 		headfoot.addExtra(head);
 		
+		//SPEEDSTAT
+		TextComponent SPEEDSTAT = new TextComponent("                (" + animation.getSpeed() + ") ");
+		SPEEDSTAT.setColor(ChatColor.WHITE);
+		SPEEDSTAT.setClickEvent(null);
+		headfoot.addExtra(SPEEDSTAT);
+		
 		//SPEED-
-		TextComponent SPEEDMINUS = new TextComponent("\n«");
+		TextComponent SPEEDMINUS = new TextComponent("«");
 		SPEEDMINUS.setColor(ChatColor.GREEN);
 		SPEEDMINUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " speed " + (animation.getSpeed() - 1)));
 		headfoot.addExtra(SPEEDMINUS);
@@ -241,19 +242,19 @@ public class AnimationCommand implements CommandExecutor {
 		headfoot.addExtra(SPEED);
 		
 		//SPEED+
-		TextComponent SPEEDPLUS = new TextComponent("»");
+		TextComponent SPEEDPLUS = new TextComponent("»\n\n");
 		SPEEDPLUS.setColor(ChatColor.GREEN);
 		SPEEDPLUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " speed " + (animation.getSpeed() + 1)));
 		headfoot.addExtra(SPEEDPLUS);
 		
-		//SPEEDSTAT
-		TextComponent SPEEDSTAT = new TextComponent(" (" + animation.getSpeed() + ")");
-		SPEEDSTAT.setColor(ChatColor.WHITE);
-		SPEEDSTAT.setClickEvent(null);
-		headfoot.addExtra(SPEEDSTAT);
+		//RWAIT STAT
+		TextComponent RWAITSTAT = new TextComponent("                (" + animation.getReverseWait() + ") ");
+		RWAITSTAT.setColor(ChatColor.WHITE);
+		RWAITSTAT.setClickEvent(null); 
+		headfoot.addExtra(RWAITSTAT);
 		
 		//RWAIT-
-		TextComponent RWAITMINUS = new TextComponent("\n\n«");
+		TextComponent RWAITMINUS = new TextComponent("«");
 		RWAITMINUS.setColor(ChatColor.GREEN);
 		RWAITMINUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " rwait " + (animation.getReverseWait() - 1)));
 		headfoot.addExtra(RWAITMINUS);
@@ -265,54 +266,37 @@ public class AnimationCommand implements CommandExecutor {
 		headfoot.addExtra(RWAIT);
 		
 		//RWAIT+
-		TextComponent RWAITPLUS = new TextComponent("»");
+		TextComponent RWAITPLUS = new TextComponent("»\n\n");
 		RWAITPLUS.setColor(ChatColor.GREEN);
 		RWAITPLUS.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " rwait " + (animation.getReverseWait() + 1)));
 		headfoot.addExtra(RWAITPLUS);
 		
-		//RWAIT STAT
-		TextComponent RWAITSTAT = new TextComponent(" (" + animation.getReverseWait() + ")");
-		RWAITSTAT.setColor(ChatColor.WHITE);
-		RWAITSTAT.setClickEvent(null); 
-		headfoot.addExtra(RWAITSTAT);
-		
-		//SHOW TRIGGER
-		TextComponent showtrigger = new TextComponent("\n\nSHOW TRIGGER");
-		ChatColor color = animation.isShowTrigger() ? ChatColor.GREEN : ChatColor.RED;
-		showtrigger.setColor(color);
-		showtrigger.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setshowtrigger " + !animation.isShowTrigger()));
-		headfoot.addExtra(showtrigger);
-		
 		//Reverse
-		TextComponent reverse = new TextComponent("\n\nREVERSE\n");
+		TextComponent reverse = new TextComponent("                     REVERSE\n");
 		ChatColor rColor = animation.isReverse() ? ChatColor.GREEN : ChatColor.RED;
 		reverse.setColor(rColor);
 		reverse.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/animation edit " + string + " setreverse " + !animation.isReverse()));
 		headfoot.addExtra(reverse);
 		
-		headfoot.addExtra(head);
+		headfoot.addExtra(new TextComponent("-=+=-                                    -=+=-"));
 
 		return headfoot;
 	}
 
-	public String getHelpMessage() {
-		
-		
-		return "help message";
-	}
-	
-	public String[] getAnimationListMessage() {
+	private String[] getAnimationListMessage() {
 		
 		String[] message = new String[4];
 		
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append("-=-  Animation list  -=-");
+		sb.append("-=+=- §d§l§oPottercraft Animations§f -=+=-");
 		
 		for(Animation animation : Main.animations) {
 			
-			sb.append("\n" + animation.getName());
-			sb.append(" : ");
+			ChatColor color = animation.canRun() ? ChatColor.GREEN : ChatColor.RED;
+			
+			sb.append("\n                   " + color + animation.getName() + ChatColor.RESET);
+			sb.append(" : " + ChatColor.ITALIC);
 			if(animation.getFrames() == null) {
 				sb.append("0F");
 			}else {
@@ -321,13 +305,13 @@ public class AnimationCommand implements CommandExecutor {
 			if(animation.isReverse()) {
 				sb.append(" R");
 			}
-			
 		}
+		sb.append("\n");
 		
 		message[0] = sb.toString();
-		message[1] = "------------------------";
-		message[2] = "<Name>  : Frames Reverse";
-		message[3] = "------------------------";
+		message[1] = "-=+=-                                    -=+=-";
+		message[2] = "           <Name>  : Frames Reverse";
+		message[3] = "-=+=-                                    -=+=-";
 		
 		
 		

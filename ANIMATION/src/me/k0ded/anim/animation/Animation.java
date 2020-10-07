@@ -13,9 +13,11 @@ public class Animation {
 	
 	String name;
 	Location animationLocation;
-	boolean showTrigger = true;
+	boolean isRunning;
 	List<Schematic> frames;
 	Location trigger;
+	
+	
 	int speed = 1;
 	int reverseWait = 20;
 	boolean reverse = true;
@@ -25,10 +27,9 @@ public class Animation {
 		Main.animations.add(this);
 	}
 	
-	public Animation(String name, Location animationLocation, boolean showTrigger, List<Schematic> frames, Location trigger, int speed, boolean reverse, int reverseWait) {
+	public Animation(String name, Location animationLocation, List<Schematic> frames, Location trigger, int speed, boolean reverse, int reverseWait) {
 		this.name = name;
 		this.animationLocation = animationLocation;
-		this.showTrigger = showTrigger;
 		this.frames = frames;
 		this.trigger = trigger;
 		this.speed = speed;
@@ -41,12 +42,14 @@ public class Animation {
 		if(!canRun())
 			return false;
 		
+		if(isRunning)
+			return true;
 		pasteFrames(frames, 0, isReverse());
-
 		return true;
 	}
 	
 	private void pasteFrames(List<Schematic> f, int i, boolean reverse) {
+		isRunning = true;
 		Bukkit.getServer().getScheduler().runTaskLater(Main.instance, new Runnable() {
 			
 			@Override
@@ -62,12 +65,12 @@ public class Animation {
 							}
 						}, reverseWait);
 					}
+					isRunning = false;
 					return;
 				}
 				pasteFrames(f, i + 1, reverse);
 				
-				Main.structureAPI.paste(f.get(i), animationLocation);
-				
+				Main.structureAPI.paste(f.get(i), animationLocation);	
 			}
 		}, speed);
 	}
@@ -80,55 +83,33 @@ public class Animation {
 			public void run() {
 				
 				if(i <= 0) {
+					isRunning = false;
 					return;
 				}
 				pasteFramesBackwards(f, i - 1); 
-				
 				Main.structureAPI.paste(f.get(i - 1), animationLocation);
 				
 			}
 		}, speed);
+		
 	}
 	
 	public boolean canRun() {
-		boolean canrun = true;
 		if(frames == null) {
-			System.out.println(name + " doesn't have any frames!");
-			canrun = false;
+			return false;
 		}
-		
 		if(animationLocation == null) {
-			System.out.println(name + " doesn't have an animation location!");
-			canrun = false;
+			return false;
 		}
-		return canrun;
-	}
-	
-	//Getters and Setters
- 	public Location getAnimationLocation() {
-		return animationLocation;
-	}
-
-	public void setAnimationLocation(Location animationLocation) {
-		this.animationLocation = animationLocation;
-	}
-
-	public boolean isShowTrigger() {
-		return showTrigger;
-	}
-
-	public void setShowTrigger(boolean showTrigger) {
-		this.showTrigger = showTrigger;
-	}
-
-	public List<Schematic> getFrames() {
-		return frames;
+		return true;
 	}
 
 	public void addFrame(Schematic frame) {
 		if(frames == null)
 			frames = new ArrayList<Schematic>();
 		frames.add(frame);
+		if(animationLocation == null)
+			animationLocation = frame.animationLocation;
 		Main.structureAPI.save(this.name + frames.size(), frame);
 	}
 	
@@ -139,7 +120,25 @@ public class Animation {
 		frames.remove(frames.size());
 		
 	}
+	
+	
+	
+	
+	
+	
+	//Getters and Setters
+	 public Location getAnimationLocation() {
+		return animationLocation;
+	}
 
+	public void setAnimationLocation(Location animationLocation) {
+		this.animationLocation = animationLocation;
+	}
+
+	public List<Schematic> getFrames() {
+		return frames;
+	}
+	
 	public Location getTrigger() {
 		return trigger;
 	}

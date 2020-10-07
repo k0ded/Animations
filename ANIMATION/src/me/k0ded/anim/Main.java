@@ -24,10 +24,10 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
+		
 		if(!this.getDataFolder().exists()) {
 			this.getDataFolder().mkdirs();
 		}
-			
 		
 		Main.instance = this;
 		Main.structureAPI = new StructureAPI(this);

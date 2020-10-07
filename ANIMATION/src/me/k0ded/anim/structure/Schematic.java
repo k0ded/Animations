@@ -1,9 +1,11 @@
 package me.k0ded.anim.structure;
 
+import org.bukkit.Location;
 import org.bukkit.block.Block;
 
 public class Schematic {
 	
+	public Location animationLocation;
 	String[][][] blocks;
 	
 	public Schematic(Block block, Block block2) {
@@ -23,6 +25,7 @@ public class Schematic {
         minX = block.getX() < block2.getX() ? block.getX() : block2.getX();
         minZ = block.getZ() < block2.getZ() ? block.getZ() : block2.getZ();
         minY = block.getY() < block2.getY() ? block.getY() : block2.getY();
+        animationLocation = new Location(block.getWorld(), minX, minY, minZ);
  
         maxX = block.getX() > block2.getX() ? block.getX() : block2.getX();
         maxZ = block.getZ() > block2.getZ() ? block.getZ() : block2.getZ();

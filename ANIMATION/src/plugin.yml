@@ -2,7 +2,6 @@ name: PotterAnimations
 version: 1.0
 main: me.k0ded.anim.Main
 api-version: 1.15
-depend: [ID-Library]
 commands:
     animation:
         usage: /<command>
