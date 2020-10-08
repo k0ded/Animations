@@ -22,13 +22,16 @@ public class AnimationFile extends AbstractFile {
 			config.set(anim.name + ".animlocz", anim.getAnimationLocation().getBlockZ());
 			config.set(anim.name + ".animlocworld", anim.getAnimationLocation().getWorld().getName());
 			config.set(anim.name + ".frames", anim.frames.size());
-			config.set(anim.name + ".triggerlocx", anim.getTrigger().getBlockX());
-			config.set(anim.name + ".triggerlocy", anim.getTrigger().getBlockY());
-			config.set(anim.name + ".triggerlocz", anim.getTrigger().getBlockZ());
-			config.set(anim.name + ".triggerlocworld", anim.getTrigger().getWorld().getName());
 			config.set(anim.name + ".speed", anim.getSpeed());
 			config.set(anim.name + ".reversewait", anim.getReverseWait());
 			config.set(anim.name + ".reverse", anim.isReverse());
+			config.set(anim.name + ".triggerlocxmin", anim.getTrigger().getMinX());
+			config.set(anim.name + ".triggerlocxmax", anim.getTrigger().getMaxX());
+			config.set(anim.name + ".triggerlocymin", anim.getTrigger().getMinY());
+			config.set(anim.name + ".triggerlocymax", anim.getTrigger().getMaxY());
+			config.set(anim.name + ".triggerloczmin", anim.getTrigger().getMinZ());
+			config.set(anim.name + ".triggerloczmax", anim.getTrigger().getMaxZ());
+			config.set(anim.name + ".triggerlocworld", anim.getTrigger().middleLocation().getWorld().getName());
 		} catch (NullPointerException e) {}
 		save();
 	}
@@ -42,25 +45,32 @@ public class AnimationFile extends AbstractFile {
 					config.getInt(key + ".animlocy"), 
 					config.getInt(key + ".animlocz"));
 			
-			Location trigger;
+			Trigger trigger;
 			
 			if(config.getString(key + ".triggerlocworld") == null) {
 				trigger = null;
 			}else {
-				trigger = new Location(
-						Bukkit.getWorld(config.getString(key + ".triggerlocworld")),
-						config.getInt(key + ".triggerlocx"),
-						config.getInt(key + ".triggerlocy"),
-						config.getInt(key + ".triggerlocz"));
+				Location minLoc = new Location(Bukkit.getWorld(config.getString(key + ".triggerlocworld")),
+						config.getInt(key + ".triggerlocxmin"),
+						config.getInt(key + ".triggerlocymin"),
+						config.getInt(key + ".triggerloczmin"));
+				Location maxLoc = new Location(Bukkit.getWorld(config.getString(key + ".triggerlocworld")),
+						config.getInt(key + ".triggerlocxmax"),
+						config.getInt(key + ".triggerlocymax"),
+						config.getInt(key + ".triggerloczmax"));
+				
+				Location[] locs = new Location[2];
+				locs[0] = minLoc;
+				locs[1] = maxLoc;
+				
+				trigger = new Trigger(locs);
 			}
 			
 			
 			
 			List<Schematic> frames = new ArrayList<Schematic>();
 			
-			if(config.getInt(key + ".frames") == 0) {
-				
-			}else {
+			if(config.getInt(key + ".frames") != 0){
 				int abc = config.getInt(key + ".frames") + 1;
 				for(int i = 1;i < abc; i++) {
 					frames.add(Main.structureAPI.load(key + i));
@@ -77,6 +87,11 @@ public class AnimationFile extends AbstractFile {
 					config.getInt(key + ".reversewait"));
 			
 		}
+	}
+
+	public void delete(Animation anim) {
+		config.set(anim.name, null);
+		save();
 	}
 
 }

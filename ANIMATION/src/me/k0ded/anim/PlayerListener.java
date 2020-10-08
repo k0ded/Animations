@@ -28,20 +28,13 @@ public class PlayerListener implements Listener {
 				e.setCancelled(true);
 				return;	
 			} 
-			
-			Builder builder = getBuilder(e.getPlayer());
-			
-			if(builder.isSettingTrigger()) {
-				builder.getTriggerSet().setTrigger(e.getClickedBlock().getLocation());
-				builder.settingTrigger(null);
-			}
 		}
 		
 		/// Player type stuff
 		for (Animation anim : Main.animations) {
 			if(anim.getTrigger() == null)
 				continue;
-			if(anim.getTrigger().getBlock().equals(e.getClickedBlock())) {
+			if(anim.getTrigger().isOnTrigger(e.getClickedBlock().getLocation())) {
 				anim.run();
 			}
 		}

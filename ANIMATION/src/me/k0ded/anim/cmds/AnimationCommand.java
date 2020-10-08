@@ -58,14 +58,11 @@ public class AnimationCommand implements CommandExecutor {
 					p.sendMessage("§cThat animation already exists!");
 					return true;
 				}
-			}
-			if(args[0].equalsIgnoreCase("edit")) {
+			}else if(args[0].equalsIgnoreCase("edit")) {
 				
 				p.spigot().sendMessage(getEditMessage(args[1]));
 				return true;
-			}
-			
-			if(args[0].equalsIgnoreCase("addframe") || args[0].equalsIgnoreCase("af")) {
+			}else if(args[0].equalsIgnoreCase("addframe") || args[0].equalsIgnoreCase("af")) {
 				
 				Animation animation = findAnimation(args[1]);
 
@@ -88,25 +85,18 @@ public class AnimationCommand implements CommandExecutor {
 					p.sendMessage("§cYou must make a selection before adding a frame!");
 				}
 				return true;
-			}
-			
-			if(args[0].equalsIgnoreCase("run")) {
+			}else if(args[0].equalsIgnoreCase("run")) {
 				
-				for(Animation anim : Main.animations) {
-					
-					if(anim.getName().contentEquals(args[1])) {
-						if(!anim.run()) {
-							p.sendMessage("§cYour magical structure isnt tuned correctly!");
-						}
-						return true;
-					}
-					
+				Animation anim = findAnimation(args[1]);
+				if(anim == null) {
+					p.sendMessage("§cThat animation doesn't exist!");
+					return true;
 				}
-				p.sendMessage("§cThat animation doesn't exist!");
+				
+				if(!anim.run())
+					p.sendMessage("§cYour magical structure isnt tuned correctly!");
 				return true;
-			}
-			
-			if(args[0].equalsIgnoreCase("setplayout")) {
+			}else if(args[0].equalsIgnoreCase("setplayout")) {
 				
 				for(Animation anim : Main.animations) {
 					if(anim.getName().contentEquals(args[1])) {
@@ -118,25 +108,36 @@ public class AnimationCommand implements CommandExecutor {
 				p.sendMessage("§cThat animation doesn't exist!");
 				
 				return true;
-			}
-			
-			if(args[0].equalsIgnoreCase("settrigger")) {
-				if(!Main.builders.containsKey(p)) {
-					Main.builders.put(p, new Builder(p));
-				}
-				
+			}else if(args[0].equalsIgnoreCase("settrigger")) {
 				Animation animation = findAnimation(args[1]);
-				Builder builder = Main.builders.get(p);
-				
+
 				if(animation == null) {
 					p.sendMessage("§cThat animation doesn't exist!");
 					return true;
 				}
 				
-				builder.settingTrigger(animation);
-				p.sendMessage("§aPerfect! Now punch the block you want to be as trigger for the animation!");				
+				if(Main.builders.containsKey(p)) {
+					Builder b = Main.builders.get(p);
+					if(b.getSelected() == null) {
+						p.sendMessage("§cYou must make a selection before setting the trigger!");
+						return true;
+					}
+					
+					b.setTrigger(animation);
+					p.sendMessage("§aYour magical trigger has been added!");
+				}else{
+					p.sendMessage("§cYou must make a selection before setting the trigger!");
+				}
 				return true;
-			}
+			}else if(args[0].equalsIgnoreCase("delete")) {
+				Animation anim = findAnimation(args[1]);
+				if(anim != null) {
+					anim.delete();
+					sender.sendMessage("§aThat animation was successfully removed!");
+				}
+				else 
+					sender.sendMessage("§cThat animation doesn't exist!");	
+				}
 			
 		case 4:
 			Player pl = (Player)sender;
@@ -191,6 +192,7 @@ public class AnimationCommand implements CommandExecutor {
 				+ "      - &oedit <animationName>\n&f"
 				+ "      - &orun <animationName>\n&f"
 				+ "      - &osetTrigger <animationName>\n&f"
+				+ "      - &odelete <animationName>\n&f"
 				+ "      - &osetPlayout\n&f"
 				+ "-=+=-                                    -=+=-";
 				

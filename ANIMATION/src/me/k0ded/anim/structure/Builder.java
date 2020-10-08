@@ -4,6 +4,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import me.k0ded.anim.animation.Animation;
+import me.k0ded.anim.animation.Trigger;
 
 public class Builder {
 	
@@ -13,14 +14,20 @@ public class Builder {
 	Block selection1;
 	Block selection2;
 	
-	Animation settingTrigger = null;
-	
 	public Builder(Player player) {
 		this.p = player;
 	}
 	
-	public void settingTrigger(Animation anim) {
-		settingTrigger = anim;
+	public void setTrigger(Animation anim) {
+		if(selection1 == null) {
+			return;
+		}
+		if(selection2 == null) {
+			return;
+		}
+		Schematic schem = new Schematic(selection1, selection2);
+		schem.getStructure(selection1, selection2);
+		anim.setTrigger(new Trigger(schem.getTriggerParam()));
 	}
 	
 	public Schematic getSelected() {
@@ -30,7 +37,6 @@ public class Builder {
 		if(selection2 == null) {
 			return null;
 		}
-		
 		return new Schematic(selection1, selection2);
 	}
 
@@ -48,18 +54,6 @@ public class Builder {
 	
 	public Block getSelection2() {
 		return selection2;
-	}
-
-	public boolean isSettingTrigger() {
-		if(settingTrigger == null) {
-			return false;
-		}else {
-			return true;
-		}
-	}
-	
-	public Animation getTriggerSet() {
-		return settingTrigger;
 	}
 
 }

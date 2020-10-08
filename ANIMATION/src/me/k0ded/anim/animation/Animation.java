@@ -15,7 +15,7 @@ public class Animation {
 	Location animationLocation;
 	boolean isRunning;
 	List<Schematic> frames;
-	Location trigger;
+	Trigger trigger;
 	
 	
 	int speed = 1;
@@ -27,7 +27,7 @@ public class Animation {
 		Main.animations.add(this);
 	}
 	
-	public Animation(String name, Location animationLocation, List<Schematic> frames, Location trigger, int speed, boolean reverse, int reverseWait) {
+	public Animation(String name, Location animationLocation, List<Schematic> frames, Trigger trigger, int speed, boolean reverse, int reverseWait) {
 		this.name = name;
 		this.animationLocation = animationLocation;
 		this.frames = frames;
@@ -36,6 +36,18 @@ public class Animation {
 		this.reverse = reverse;
 		this.reverseWait = reverseWait;
 		Main.animations.add(this);
+		if(frames.size() > 0) {
+			Main.structureAPI.paste(frames.get(0), animationLocation);
+		}
+	}
+	
+	public void delete() {
+		for(int i = 1;i < (frames.size() + 1) * 2; i++) {
+			Main.structureAPI.remove(name + i);
+		}
+		frames.clear();
+		Main.animationFile.delete(this);
+		Main.animations.remove(this);
 	}
 	
 	public boolean run() {
@@ -139,11 +151,11 @@ public class Animation {
 		return frames;
 	}
 	
-	public Location getTrigger() {
+	public Trigger getTrigger() {
 		return trigger;
 	}
 
-	public void setTrigger(Location trigger) {
+	public void setTrigger(Trigger trigger) {
 		this.trigger = trigger;
 	}
 
